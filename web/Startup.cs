@@ -51,6 +51,13 @@ namespace web
                 .AddEntityFrameworkStores<AuthDbContext>()
                 .AddDefaultTokenProviders();
 
+            services.ConfigureApplicationCookie(options =>
+            {
+                options.LoginPath = "/Login";
+                options.LogoutPath = "/Logout";
+                options.AccessDeniedPath = "/AccesDenied";
+            });
+
             services.AddSingleton<IEmailSender, DummyEmailSender>();
         }
 
