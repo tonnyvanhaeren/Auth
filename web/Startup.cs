@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using web.Data;
 using web.Services;
+using web.Utilities;
 
 namespace web
 {
@@ -59,6 +60,7 @@ namespace web
             });
 
             services.AddSingleton<IEmailSender, DummyEmailSender>();
+            services.AddSingleton<IBase64QrCodeGenerator, Base64QrCodeGenerator>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -69,6 +71,8 @@ namespace web
                 app.UseDeveloperExceptionPage();
             }
 
+            app.UseHsts();
+            app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseAuthentication();
 

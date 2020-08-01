@@ -18,6 +18,7 @@ namespace web.Services
         public Task SendEmailAsync(string email, string subject, string htmlMessage)
         {
             _logger.LogWarning("Dummy EmailSender implementation is being used!!!");
+            _logger.LogDebug($"{email}{Environment.NewLine}{subject}{Environment.NewLine}{htmlMessage}");
             return Task.CompletedTask;
         }
     }
