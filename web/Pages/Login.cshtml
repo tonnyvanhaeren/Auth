@@ -1,5 +1,6 @@
 ﻿@page
 @model web.Pages.LoginModel
+@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer Localizer
 @{
     ViewData["Title"] = "Log in";
 }
@@ -31,10 +32,10 @@
     </div>
     <div class="form-group">
         <p>
-            <a id="forgot-password" asp-page="./ForgotPassword">Forgot your password?</a>
+            <a id="forgot-password" asp-page="./ForgotPassword">@Localizer["ForgotPassword"]</a>
         </p>
         <p>
-            <a asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl">Register as a new user</a>
+            <a asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl">@Localizer["RegisterNewUser"]</a>
         </p>
     </div>
 </form>

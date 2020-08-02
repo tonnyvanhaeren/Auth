@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
@@ -15,11 +16,19 @@ namespace web.Pages
         private readonly SignInManager<PlayBallUser> _signInManager;
         private readonly ILogger<LoginModel> _logger;
 
-        public LoginModel(SignInManager<PlayBallUser> signInManager,
-            ILogger<LoginModel> logger)
+        public IStringLocalizer<LoginModel> _localizer { get; }
+        public IStringLocalizer<SharedResource> _sharedLocalizer { get; }
+
+        public LoginModel(
+            SignInManager<PlayBallUser> signInManager,
+            ILogger<LoginModel> logger,
+            IStringLocalizer<LoginModel> localizer,
+            IStringLocalizer<SharedResource> sharedLocalizer)
         {
             _signInManager = signInManager;
             _logger = logger;
+            _localizer = localizer;
+            _sharedLocalizer = sharedLocalizer;
         }
 
         [BindProperty]
@@ -40,12 +49,14 @@ namespace web.Pages
             [DataType(DataType.Password)]
             public string Password { get; set; }
 
-            [Display(Name = "Remember me?")]
+            [Display(Name = "RememberMe")]
             public bool RememberMe { get; set; }
         }
 
         public void OnGet(string returnUrl = null)
         {
+            _logger.LogDebug(_sharedLocalizer["SampleSharedString"]);
+
             if (!string.IsNullOrEmpty(ErrorMessage))
             {
                 ModelState.AddModelError(string.Empty, ErrorMessage);
@@ -77,7 +88,7 @@ namespace web.Pages
                 }
                 else
                 {
-                    ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+                    ModelState.AddModelError(string.Empty, _localizer["InvalidLoginAttempt"]);
                     return Page();
                 }
             }
