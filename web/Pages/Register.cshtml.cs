@@ -3,10 +3,13 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System.ComponentModel.DataAnnotations;
+using System.Security.Claims;
 using System.Text;
 using System.Text.Encodings.Web;
+using System.Threading;
 using System.Threading.Tasks;
 using web.Data;
 using web.Services;
@@ -62,7 +65,7 @@ namespace web.Pages
             ReturnUrl = returnUrl;
         }
 
-        public async Task<IActionResult> OnPostAsync(string returnUrl = null)
+        public async Task<IActionResult> OnPostAsync(CancellationToken ct, string returnUrl = null)
         {
             // returnUrl = returnUrl ?? Url.Content("~/");
 
@@ -73,6 +76,8 @@ namespace web.Pages
                     UserName = Input.Email,
                     Email = Input.Email,
                 };
+
+                var isFirstUser = !await _userManager.Users.AnyAsync(ct);
 
                 IdentityResult result = await _userManager.CreateAsync(user, Input.Password);
 
@@ -90,6 +95,16 @@ namespace web.Pages
 
                     await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
                         $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+
+                    var addClaimResult = await _userManager.AddClaimAsync(user, new Claim(ClaimTypes.Role, "admin"));
+
+                    if(!addClaimResult.Succeeded)
+                    {
+                        // TODO: somthing went wrong, handle it!
+                    }
+
+
+
 
                     await _signInManager.SignInAsync(user, isPersistent: false);
 

@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using System.Globalization;
+using System.Security.Claims;
 using web.Data;
 using web.Services;
 using web.Utilities;
@@ -32,12 +33,13 @@ namespace web
             services.AddLocalization(options => options.ResourcesPath = "Resources");
 
             services
-                .AddMvc( options => {
+                .AddMvc(options => {
                     options.EnableEndpointRouting = false;
                 })
                 .SetCompatibilityVersion(Microsoft.AspNetCore.Mvc.CompatibilityVersion.Version_3_0)
                 .AddRazorPagesOptions(options => {
                     options.Conventions.AuthorizeFolder("/Account");
+                    options.Conventions.AuthorizePage("/Admin/ConventionPolicyProtected", "AdminPolicy");
                 })
                 .AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix)
                 .AddDataAnnotationsLocalization();
@@ -73,11 +75,15 @@ namespace web
                 .AddEntityFrameworkStores<AuthDbContext>()
                 .AddDefaultTokenProviders();
 
+            services.AddAuthorization(options => {
+                options.AddPolicy("AdminPolicy", policy => policy.RequireClaim(ClaimTypes.Role, "admin"));
+            });
+            
             services.ConfigureApplicationCookie(options =>
             {
                 options.LoginPath = "/Login";
                 options.LogoutPath = "/Logout";
-                options.AccessDeniedPath = "/AccesDenied";
+                options.AccessDeniedPath = "/AccessDenied";
             });
 
             services.AddSingleton<IEmailSender, DummyEmailSender>();
