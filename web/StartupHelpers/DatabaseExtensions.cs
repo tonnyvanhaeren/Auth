@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using IdentityServer4.EntityFramework.DbContexts;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System.Threading.Tasks;
@@ -14,6 +15,9 @@ namespace web.StartupHelpers
             {
                 var context = scope.ServiceProvider.GetRequiredService<AuthDbContext>();
                 await context.Database.MigrateAsync();
+
+                var grantDbContext = scope.ServiceProvider.GetRequiredService<PersistedGrantDbContext>();
+                await grantDbContext.Database.MigrateAsync();
             }
         }
     }
